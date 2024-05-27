@@ -3,6 +3,12 @@ import { Config } from '@stencil/core';
 export const config: Config = {
   namespace: 'ambulance-project',
   globalScript: 'src/global/app.ts',
+  testing: {
+    transformIgnorePatterns: ["/node_modules/(?!axios)"],
+    transform: {
+      "^.+\\.(js|jsx)$": "babel-jest",
+    },
+  },
   outputTargets: [
     {
       type: 'dist',
@@ -21,7 +27,4 @@ export const config: Config = {
       serviceWorker: null, // disable service workers
     },
   ],
-  testing: {
-    browserHeadless: "new",
-  },
 };

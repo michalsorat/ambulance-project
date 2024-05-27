@@ -7,21 +7,28 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
     interface AmbulanceApp {
+        "ambulanceId": string;
+        "apiBase": string;
+        "basePath": string;
     }
-    interface MyComponent {
-        /**
-          * The first name
-         */
-        "first": string;
-        /**
-          * The last name
-         */
-        "last": string;
-        /**
-          * The middle name
-         */
-        "middle": string;
+    interface AmbulanceRecordDetail {
+        "ambulanceId": string;
+        "apiBase": string;
+        "entryId": string;
+        "order": any;
     }
+    interface AmbulanceRecordList {
+        "ambulanceId": string;
+        "apiBase": string;
+    }
+}
+export interface AmbulanceRecordDetailCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLAmbulanceRecordDetailElement;
+}
+export interface AmbulanceRecordListCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLAmbulanceRecordListElement;
 }
 declare global {
     interface HTMLAmbulanceAppElement extends Components.AmbulanceApp, HTMLStencilElement {
@@ -30,37 +37,68 @@ declare global {
         prototype: HTMLAmbulanceAppElement;
         new (): HTMLAmbulanceAppElement;
     };
-    interface HTMLMyComponentElement extends Components.MyComponent, HTMLStencilElement {
+    interface HTMLAmbulanceRecordDetailElementEventMap {
+        "editor-closed": string;
     }
-    var HTMLMyComponentElement: {
-        prototype: HTMLMyComponentElement;
-        new (): HTMLMyComponentElement;
+    interface HTMLAmbulanceRecordDetailElement extends Components.AmbulanceRecordDetail, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLAmbulanceRecordDetailElementEventMap>(type: K, listener: (this: HTMLAmbulanceRecordDetailElement, ev: AmbulanceRecordDetailCustomEvent<HTMLAmbulanceRecordDetailElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLAmbulanceRecordDetailElementEventMap>(type: K, listener: (this: HTMLAmbulanceRecordDetailElement, ev: AmbulanceRecordDetailCustomEvent<HTMLAmbulanceRecordDetailElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLAmbulanceRecordDetailElement: {
+        prototype: HTMLAmbulanceRecordDetailElement;
+        new (): HTMLAmbulanceRecordDetailElement;
+    };
+    interface HTMLAmbulanceRecordListElementEventMap {
+        "entry-clicked": string;
+    }
+    interface HTMLAmbulanceRecordListElement extends Components.AmbulanceRecordList, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLAmbulanceRecordListElementEventMap>(type: K, listener: (this: HTMLAmbulanceRecordListElement, ev: AmbulanceRecordListCustomEvent<HTMLAmbulanceRecordListElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLAmbulanceRecordListElementEventMap>(type: K, listener: (this: HTMLAmbulanceRecordListElement, ev: AmbulanceRecordListCustomEvent<HTMLAmbulanceRecordListElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLAmbulanceRecordListElement: {
+        prototype: HTMLAmbulanceRecordListElement;
+        new (): HTMLAmbulanceRecordListElement;
     };
     interface HTMLElementTagNameMap {
         "ambulance-app": HTMLAmbulanceAppElement;
-        "my-component": HTMLMyComponentElement;
+        "ambulance-record-detail": HTMLAmbulanceRecordDetailElement;
+        "ambulance-record-list": HTMLAmbulanceRecordListElement;
     }
 }
 declare namespace LocalJSX {
     interface AmbulanceApp {
+        "ambulanceId"?: string;
+        "apiBase"?: string;
+        "basePath"?: string;
     }
-    interface MyComponent {
-        /**
-          * The first name
-         */
-        "first"?: string;
-        /**
-          * The last name
-         */
-        "last"?: string;
-        /**
-          * The middle name
-         */
-        "middle"?: string;
+    interface AmbulanceRecordDetail {
+        "ambulanceId"?: string;
+        "apiBase"?: string;
+        "entryId"?: string;
+        "onEditor-closed"?: (event: AmbulanceRecordDetailCustomEvent<string>) => void;
+        "order"?: any;
+    }
+    interface AmbulanceRecordList {
+        "ambulanceId"?: string;
+        "apiBase"?: string;
+        "onEntry-clicked"?: (event: AmbulanceRecordListCustomEvent<string>) => void;
     }
     interface IntrinsicElements {
         "ambulance-app": AmbulanceApp;
-        "my-component": MyComponent;
+        "ambulance-record-detail": AmbulanceRecordDetail;
+        "ambulance-record-list": AmbulanceRecordList;
     }
 }
 export { LocalJSX as JSX };
@@ -68,7 +106,8 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             "ambulance-app": LocalJSX.AmbulanceApp & JSXBase.HTMLAttributes<HTMLAmbulanceAppElement>;
-            "my-component": LocalJSX.MyComponent & JSXBase.HTMLAttributes<HTMLMyComponentElement>;
+            "ambulance-record-detail": LocalJSX.AmbulanceRecordDetail & JSXBase.HTMLAttributes<HTMLAmbulanceRecordDetailElement>;
+            "ambulance-record-list": LocalJSX.AmbulanceRecordList & JSXBase.HTMLAttributes<HTMLAmbulanceRecordListElement>;
         }
     }
 }
