@@ -97,9 +97,9 @@ export class AmbulanceRecordDetail {
                 <md-icon slot="leading-icon">healing</md-icon>
               </md-filled-text-field>
 
-              <md-filled-text-field label="Čas vydania stravy"
+              <md-filled-text-field label="Čas podávania stravy"
                 type="time"
-                required value={this.entry?.consumationTime ? this.formatConsumationTime(this.entry?.consumationTime) : ''}
+                required value={this.entry?.consumationTime ? this.formatTime(this.entry?.consumationTime) : ''}
                 oninput={(ev: InputEvent) => {
                   if (this.entry) {
                     const time = this.handleInputEvent(ev);
@@ -123,7 +123,7 @@ export class AmbulanceRecordDetail {
                 onClick={() => this.editorClosed.emit("cancel")}>
                 Zrušiť
               </md-outlined-button>
-              <md-filled-button id="confirm" disabled={!this.isValid}
+              <md-filled-button id="confirm" disabled={!this.validateForm}
                 onClick={() => this.updateEntry()}>
                 <md-icon slot="icon">save</md-icon>
                 Uložiť
@@ -135,17 +135,32 @@ export class AmbulanceRecordDetail {
     );
   }
 
+  private validateForm(): boolean {
+    this.isValid = true;
+    for (let i = 0; i < this.formElement.children.length; i++) {
+        const element = this.formElement.children[i]
+        if ("reportValidity" in element) {
+          const valid = (element as HTMLInputElement).reportValidity();
+          this.isValid &&= valid;
+        }
+      }
+      return this.isValid;
+  }
+
   private handleInputEvent(ev: InputEvent): string {
     const target = ev.target as HTMLInputElement;
     this.isValid = true;
-    for (let i = 0; i < this.formElement.children.length; i++) {
-      const element = this.formElement.children[i]
-      if ("reportValidity" in element) {
-        const valid = (element as HTMLInputElement).reportValidity();
-        this.isValid &&= valid;
-      }
-    }
-    return target.value
+    const valid = target.reportValidity();
+    this.isValid &&= valid;
+    return target.value;
+  }
+
+  private formatTime(timeString: string): string {
+    if (!timeString) return '';
+    const date = new Date(timeString);
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
   }
 
   private formatConsumationTime(timeString: string): string {
@@ -176,21 +191,23 @@ export class AmbulanceRecordDetail {
     }
   }
 
-
   public async updateEntry() {
-    try {
-      const api = MealOrdersApiFactory(undefined, this.apiBase);
-      const response
-        = this.entryId === "@new"
-          ? await api.createMealOrder(this.ambulanceId, this.entry)
-          : await api.updateMealOrder(this.ambulanceId, this.entryId, this.entry);
-      if (response.status < 299) {
-        this.editorClosed.emit("store")
-      } else {
-        this.errorMessage = `Cannot store entry: ${response.statusText}`
+    this.isValid = this.validateForm();
+    if (this.isValid) {
+      try {
+        const api = MealOrdersApiFactory(undefined, this.apiBase);
+        const response
+          = this.entryId === "@new"
+            ? await api.createMealOrder(this.ambulanceId, this.entry)
+            : await api.updateMealOrder(this.ambulanceId, this.entryId, this.entry);
+        if (response.status < 299) {
+          this.editorClosed.emit("store")
+        } else {
+          this.errorMessage = `Cannot store entry: ${response.statusText}`
+        }
+      } catch (err: any) {
+        this.errorMessage = `Cannot store entry: ${err.message || "unknown"}`
       }
-    } catch (err: any) {
-      this.errorMessage = `Cannot store entry: ${err.message || "unknown"}`
     }
   }
 

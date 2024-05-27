@@ -34,6 +34,14 @@ export class AmbulanceRecordList {
     return [];
   }
 
+  private formatTime(timeString: string): string {
+    if (!timeString) return '';
+    const date = new Date(timeString);
+    const hours = String(date.getUTCHours()).padStart(2, '0');
+    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+  }
+
   render() {
     return (
       <Host>
@@ -52,7 +60,7 @@ export class AmbulanceRecordList {
                     <div class="patient-order-info">Číslo objednávky: {patient.id}</div>
                     <div class="dietary-requirements">Stravovacie požiadavky: {patient.dietaryReq}</div>
                     <div class="medical-need">Medicínska potreba: {patient.medicalNeed}</div>
-                    <div class="estimated-service-time">Čas vydania stravy: {patient.consumationTime}</div>
+                    <div class="estimated-service-time">Čas podávania stravy: {this.formatTime(patient.consumationTime)}</div>
                   </div>
                 </md-list-item>
               ))}
@@ -71,25 +79,4 @@ export class AmbulanceRecordList {
       </Host>
     );
   }
-
-  selectOrder(order: any) {
-    this.selectedOrder = order;
-  }
-
-  deselectOrder() {
-    this.selectedOrder = null;
-  }
-
-  cancelOrder(event: Event, orderId: string) {
-    event.stopPropagation();
-    this.orders = this.orders.filter(order => order.orderId !== orderId);
-    if (this.selectedOrder && this.selectedOrder.orderId === orderId) {
-      this.selectedOrder = null;
-    }
-  }
-
-  addNewOrder() {
-    console.log("not implemented yet");
-  }
-
 }
